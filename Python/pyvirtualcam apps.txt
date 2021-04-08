@@ -1,0 +1,12 @@
+Works:
+	Zoom
+	Discord
+	Google Meet
+	Google Hangouts
+	
+Doesn't work (yet):
+	
+Untested
+	Teams
+	Webex
+	
