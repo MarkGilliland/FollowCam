@@ -13,8 +13,8 @@ ser = ardLib.initGimbal(useFirstFound=True)
 aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_100)
 aruco_parameters =  aruco.DetectorParameters_create()
 
-cap = 0;
-i = 0;
+cap = 0
+i = 0
 while True:
     cap = cv2.VideoCapture(i)
     if cap.isOpened() == False:
@@ -41,6 +41,7 @@ eyes_cascade      = cv2.CascadeClassifier('haarCascades/haarcascade_eye_tree_eye
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
+
 minFaceSize = 100 #Minimum size of face to detect. At 720p,  is roughly 12ft away
 
 debugDrawings = False
@@ -53,11 +54,11 @@ neutralY = -0.4
 posX = neutralX
 posY = neutralY
 
-arucoScaleFactor = 2
+arucoScaleFactor = 2.0
 arucoImgWidth = int(capWidth/arucoScaleFactor)
 arucoImgHeight = int(capHeight/arucoScaleFactor)
 
-faceDetectionScaleFactor = 6
+faceDetectionScaleFactor = 6.0
 faceDetectionImgWidth = int(capWidth/faceDetectionScaleFactor)
 faceDetectionImgHeight = int(capHeight/faceDetectionScaleFactor)
 smallestFeature = tuple([int(minFaceSize//faceDetectionScaleFactor)])*2
@@ -92,8 +93,12 @@ with pyvirtualcam.Camera(width=capWidth, height=capHeight, fps=30, delay = 0) as
         #Find the aruco
         arucoCorners, arucoIds, rejectedImgPoints = aruco.detectMarkers(grayForAruco, aruco_dict, parameters=aruco_parameters)
         arucoFound = arucoIds is not None
+        arucoIndex = 0
         if arucoFound:
-            arucoCenters = arucoCorners[0].mean(axis=1)
+            arucoIndex = arucoIds.argmin()
+            arucoIndex = 0
+            arucoCenters = arucoCorners[arucoIndex].mean(axis=1)
+            lastFaceTimestamp = time.time()
 
         #if no aruco found, then look for faces
         if(not arucoFound and not arucoOnly):
@@ -146,7 +151,7 @@ with pyvirtualcam.Camera(width=capWidth, height=capHeight, fps=30, delay = 0) as
             scaleFactor = arucoScaleFactor
             faceSizes = [[0]]
             faces = [0]
-            faces[faceSizes[0][0]] = (int(arucoCenters[0][0]*arucoScaleFactor), int(arucoCenters[0][1]*arucoScaleFactor), 100, 100)
+            faces[faceSizes[0][0]] = (int(arucoCenters[0][0]*arucoScaleFactor/faceDetectionScaleFactor), int(arucoCenters[0][1]*arucoScaleFactor/faceDetectionScaleFactor), 100, 100)
         if not arucoFound and len(faces) > 0:
             x, y, w, h = faces[faceSizes[0][0]]
             #cv2.rectangle(editedFrame, (int(faceDetectionScaleFactor*x), int(faceDetectionScaleFactor*y)), (int(faceDetectionScaleFactor*(x+w)), int(faceDetectionScaleFactor*(y+h))), rectColor, 4)
@@ -154,7 +159,6 @@ with pyvirtualcam.Camera(width=capWidth, height=capHeight, fps=30, delay = 0) as
             scaleFactor = faceDetectionScaleFactor
 
         if arucoFound or len(faces) > 0:
-            print(featureCenter, scaleFactor, rectColor)
             if debugDrawings:
                 cv2.circle(editedFrame, featureCenter, int(scaleFactor*w / 15), rectColor, 3)
 
