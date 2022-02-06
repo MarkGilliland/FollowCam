@@ -1,6 +1,8 @@
 # FollowCam
 A servo gimbal that allows a webcam to follow a face around the room. It can also follow an Aruco marker, if you want to use the aruco marker as a tool to direct your camera around.
 
+Youtube Demo: https://youtu.be/1L1MOE9W7iE
+
 ## Installation/Prerequisites
 * Designed for use with a Logitech C270 webcam (720p)
 * Written in Python 3.8.9
